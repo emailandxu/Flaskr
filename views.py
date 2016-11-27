@@ -22,7 +22,7 @@ def user_register():
     userform = UserForm()
     if userform.is_submitted():
         if userform.validate():
-            user = User.initWIthFlaskForm(userform)
+            user = User.initWIthForm(userform)
             db.session.add(user)
             db.session.commit()
         else:

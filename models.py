@@ -8,7 +8,7 @@ db = SQLAlchemy(app)
 class ModelWithWTF():
 
     @classmethod
-    def initWIthFlaskForm(cls, form):
+    def initWIthForm(cls, form):
         model = cls()
         for field in form:
             fieldname = field.label.field_id
