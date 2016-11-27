@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>User Register</title>
+	<style>
+		.register{
+
+		}
+		.register input,textarea{
+			display: block;
+			margin-bottom: 10px;
+		}
+		.csrf_token{
+			display: none;
+		}
+	</style>
+</head>
+<body>
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for category, message in messages %}
+      <li class="{{ category }}">{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+<div class="register">
+	<form action="{{url_for('user_register')}}" method="post">
+
+		{%for field in form%}
+			<label for="{{field.label.field_id}}" class="{{field.label.field_id}}">{{field.label.text}}</label>
+			{{field()}}
+		{%endfor%}
+		<div><input id="submit" type="submit" ></div>	
+	</form>
+</div>
+
+</body>
+</html>
