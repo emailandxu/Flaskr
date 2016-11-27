@@ -3,7 +3,7 @@ from models import db, User, Post, Category, PostCategoryRelation
 from decorators import templated
 from flask import url_for, redirect, flash
 from forms import UserForm
-
+import sqlalchemy
 
 @app.route('/')
 @templated('index.html')
@@ -24,7 +24,12 @@ def user_register():
         if userform.validate():
             user = User.initWIthForm(userform)
             db.session.add(user)
-            db.session.commit()
+            try:
+                db.session.commit()
+            except sqlalchemy.exc.IntegrityError as e:
+                flash('账户已使用!')
+            else:
+                flash('创建成功{0}'.format(user))
         else:
             flash(userform.unsuccessed)
     return dict(form=userform)

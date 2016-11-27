@@ -20,8 +20,7 @@ class ModelWithWTF():
 
 
 class User(db.Model, ModelWithWTF):
-    id = db.Column(db.Integer, primary_key=True)
-    account = db.Column(db.String(80), nullable=False)
+    account = db.Column(db.String(80), primary_key=True)
     email = db.Column(db.String(100),nullable=False)
     nickname = db.Column(db.String(80), nullable=False)
     password = db.Column(db.String(200), nullable=False)
