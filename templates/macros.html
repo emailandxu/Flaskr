@@ -1,0 +1,8 @@
+{%macro markdown(md)%}
+<div class="markdown">
+{%autoescape false%}
+{{md | markdown}}
+{{caller()}}
+{% endautoescape %}	
+</div>
+{%endmacro%}

@@ -1,7 +1,7 @@
 from conf import app
-from models import db, User, Post, Category, PostCategoryRelation
+from models import db, User, Article, Category, ArticleCategoryRelation
 from decorators import templated
-from flask import url_for, redirect, flash
+from flask import url_for, redirect, flash, abort
 from forms import UserForm
 import sqlalchemy
 
@@ -9,11 +9,6 @@ import sqlalchemy
 @templated('index.html')
 def index():
     return dict(message="Hello")
-
-
-@app.route('/r', methods=('GET', 'POST'))
-def redrct():
-    return redirect(url_for('user_register'))
 
 
 @app.route('/register',methods=['GET','POST'])
@@ -34,6 +29,18 @@ def user_register():
             flash(userform.unsuccessed)
     return dict(form=userform)
 
+
+@app.route('/markdown/<md_name>',methods=['GET','POST'])
+@templated('markdown.html')
+def markdown(md_name):
+    if not md_name in app.config['MD_FILES']:
+        abort(404)
+
+    thefile = app.config['MD_FILES'][md_name]
+    md = ""
+    with open(thefile,'rb') as f:
+        md = f.read().decode('utf-8')
+    return dict(message="nihao",md=md)
 
 if __name__ == '__main__':
     app.run()

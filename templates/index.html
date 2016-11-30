@@ -2,9 +2,27 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>flaskr</title>
+		<title>{%block title%}Flaskr{%endblock%}</title>
+		{%block css%}<link rel="stylesheet" type="text/css" href="{{url_for('static',filename='css/style.css')}}">{%endblock%}
+		{%block jssrc%}<script src="{{url_for('static',filename='js/vue.js')}}"></script>{%endblock%}
 </head>
 <body>
-	{{message}}
+<div class="flash">
+	{%block flash%}
+	{% with messages = get_flashed_messages(with_categories=true) %}
+	  {% if messages %}
+	    <ul class=flashes>
+	    {% for category, message in messages %}
+	      <li class="{{ category }}">{{ message }}</li>
+	    {% endfor %}
+	    </ul>
+	  {% endif %}
+	{% endwith %}
+	{%endblock%}
+</div>
+<div id="app">
+{%block content%}
+{%endblock%}
+</div>
 </body>
 </html>

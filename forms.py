@@ -9,3 +9,6 @@ class UserForm(FlaskForm):
     nickname = TextField("昵称", validators=[DataRequired()])
     password = PasswordField("密码", validators=[DataRequired()])
     description = TextAreaField("介绍", validators=[DataRequired()])
+
+class ArticleForm(FlaskForm):
+	pass

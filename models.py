@@ -33,7 +33,7 @@ class User(db.Model, ModelWithWTF):
         return self.__repr__()
 
 
-class Post(db.Model, ModelWithWTF):
+class Article(db.Model, ModelWithWTF):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(80), nullable=False)
     body = db.Column(db.Text)
@@ -48,7 +48,7 @@ class Post(db.Model, ModelWithWTF):
         self.category = category
 
     def __repr__(self):
-        return '<Post %r>' % self.title
+        return '<Article %r>' % self.title
 
     def __str__(self):
         return self.__repr__()
@@ -67,16 +67,33 @@ class Category(db.Model, ModelWithWTF):
     def __str__(self):
         return self.__repr__()
 
-
-class PostCategoryRelation(db.Model):
-    __tablename__ = "post_category_relation"
+class Comment(db.Model,ModelWithWTF):
     id = db.Column(db.Integer, primary_key=True)
-    post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
+    body = db.Column(db.String(300),nullable = False)
+    pub_date = db.Column(db.DateTime,nullable = False)
+
+    user_account = db.Column(db.String(80), db.ForeignKey('user.account'))
+    user = db.relationship('User',backref=db.backref('comments',lazy='dynamic'))
+
+    article_id = db.Column(db.Integer, db.ForeignKey('article.id'))
+    article = db.relationship('Article',backref=db.backref('comments',lazy='dynamic'))
+
+    def __str__(self):
+        return '<Comment {0},{1}>'.format(self.body, self.pub_date)
+
+    def __repr__(self):
+        return self.__str__()
+
+
+class ArticleCategoryRelation(db.Model):
+    __tablename__ = "article_category_relation"
+    id = db.Column(db.Integer, primary_key=True)
+    article_id = db.Column(db.Integer, db.ForeignKey('article.id'))
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
 
     def __repr__(self):
-        return '<PostCategory {0}, `{1}`>'.format(
-            Post.query.get(self.post_id).title,
+        return '<ArticleCategory {0}, `{1}`>'.format(
+            Article.query.get(self.article_id).title,
             Category.query.get(self.category_id).name)
 
     def __str__(self):

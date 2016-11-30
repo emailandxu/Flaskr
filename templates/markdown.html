@@ -1,0 +1,7 @@
+{%extends "index.html"%}
+{%block title%}Markdown Reader{%endblock%}
+{%block content%}
+{%import 'macros.html' as m%}
+{%call m.markdown(md)%}
+{%endcall%}
+{%endblock%}
