@@ -2,6 +2,10 @@
 	display: block;
 	margin-bottom: 10px;
 }
+.login input{
+	display:block;
+	margin-bottom:10px;
+}
 .csrf_token{
 	display: none;
 }
