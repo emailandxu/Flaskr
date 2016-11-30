@@ -16,7 +16,21 @@ class ModelWithWTF():
                 setattr(model, fieldname, getattr(form, fieldname).data)
             except AttributeError as e:
                 print(e)
+
+        model.set_now()                #设置公布时间
         return model
+
+    def set_now(self,datetime_value=None):
+        """将有pub_date属性的实例设置成现在."""
+
+        if not hasattr(self,"pub_date"):
+            return
+
+        if not datetime_value:
+            self.pub_date = datetime_value
+        else:
+            self.pub_date = datetime.utcnow()
+
 
 
 class User(db.Model, ModelWithWTF):
@@ -38,6 +52,9 @@ class Article(db.Model, ModelWithWTF):
     title = db.Column(db.String(80), nullable=False)
     body = db.Column(db.Text)
     pub_date = db.Column(db.DateTime)
+    category_name = db.Column(db.String(40), db.ForeignKey('category.name'))
+    category = db.relationship('Category',
+        backref=db.backref('posts', lazy='dynamic'))
 
     def __init__(self, title, body, category, pub_date=None):
         self.title = title
@@ -55,14 +72,28 @@ class Article(db.Model, ModelWithWTF):
 
 
 class Category(db.Model, ModelWithWTF):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50))
+    name =db.Column(db.String(40), primary_key=True)
+
+    def __init__(self,name):
+        self.name = name
+
+    def __str__(self):
+        return '<Category %r>' % self.name
+
+    def __repr__(self):
+        return self.__str__()
+
+
+class Tag(db.Model, ModelWithWTF):
+    __tablename__ = "tag"
+
+    name = db.Column(db.String(50),primary_key=True)
 
     def __init__(self, name):
         self.name = name
 
     def __repr__(self):
-        return '<Category %r>' % self.name
+        return '<Tag %r>' % self.name
 
     def __str__(self):
         return self.__repr__()
@@ -85,16 +116,16 @@ class Comment(db.Model,ModelWithWTF):
         return self.__str__()
 
 
-class ArticleCategoryRelation(db.Model):
-    __tablename__ = "article_category_relation"
+class ArticleTagRelation(db.Model):
+    __tablename__ = "article_tag_relation"
     id = db.Column(db.Integer, primary_key=True)
     article_id = db.Column(db.Integer, db.ForeignKey('article.id'))
-    category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
+    tag_name = db.Column(db.String(50), db.ForeignKey('tag.name'))
 
     def __repr__(self):
-        return '<ArticleCategory {0}, `{1}`>'.format(
+        return '<ArticleTag {0}, `{1}`>'.format(
             Article.query.get(self.article_id).title,
-            Category.query.get(self.category_id).name)
+            Tag.query.get(self.tag_name).name)
 
     def __str__(self):
         return self.__repr__()

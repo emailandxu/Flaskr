@@ -5,6 +5,7 @@ from flask import url_for, redirect, flash, abort, session,request
 from forms import UserForm,LoginForm
 import sqlalchemy
 
+
 @app.route('/')
 @login_required
 @templated('index.html')
@@ -12,6 +13,11 @@ def index():
     flash("Weclome dear {0}".format(session['username']))
     return dict()
 
+@app.route('/publish')
+@login_required
+@templated('forms/user_login')
+def publish_article():
+    pass
 
 @app.route('/register',methods=['GET','POST'])
 @templated('forms/user_register.html')
@@ -34,6 +40,7 @@ def user_register():
 
     return dict(form=userform,action=request.url)
 
+
 @app.route('/login',methods=['GET','POST'])
 @templated('forms/user_login.html')
 def user_login():
@@ -54,6 +61,7 @@ def user_login():
                 return redirect(url_for('index'))
         
     return dict(form=loginform,action=request.url)
+
 
 @app.route('/logout',methods=['GET','POST'])
 def user_logout():
