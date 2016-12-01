@@ -1,5 +1,5 @@
 from conf import app
-from models import db, User, Article, Category, ArticleCategoryRelation
+from models import db, User, Article, Category, ArticleTagRelation
 from decorators import templated,login_required
 from flask import url_for, redirect, flash, abort, session,request
 from forms import UserForm,LoginForm
