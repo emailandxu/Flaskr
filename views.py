@@ -1,8 +1,8 @@
 from conf import app
-from models import db, User, Article, Category, ArticleTagRelation
-from decorators import templated,login_required
-from flask import url_for, redirect, flash, abort, session,request
-from forms import UserForm,LoginForm
+from models import db, User, Article, Category
+from decorators import templated, login_required
+from flask import url_for, redirect, flash, abort, session, request
+from forms import UserForm, LoginForm, ArticleForm 
 import sqlalchemy
 
 
@@ -11,75 +11,89 @@ import sqlalchemy
 @templated('index.html')
 def index():
     flash("Weclome dear {0}".format(session['username']))
-    return dict()
+    articles =Article.query.filter(1==1).all()
+    return dict(articles = articles)
 
-@app.route('/publish')
+
+@app.route('/publish',methods=['GET','POST'])
 @login_required
-@templated('forms/user_login')
+@templated('forms/user_common.html')
 def publish_article():
-    pass
+    articleform = ArticleForm()
+    if articleform.validate_on_submit():
+        if not Category.query.get(articleform.name.data):
+            category = Category()
+            category.name = articleform.name.data
+            db.session.add(category)
+            db.session.commit()
+        article = Article.initWIthForm(articleform)
+        db.session.add(article)
+        db.session.commit()
 
-@app.route('/register',methods=['GET','POST'])
-@templated('forms/user_register.html')
+        flash('文章发表成功！')
+
+    return dict(form=articleform)
+
+
+@app.route('/register', methods=['GET', 'POST'])
+@templated('forms/user_common.html')
 def user_register():
     userform = UserForm()
-    next_url = request.args.get('next')
-    
+
     if userform.is_submitted():
         if userform.validate():
             user = User.initWIthForm(userform)
             db.session.add(user)
             try:
                 db.session.commit()
-            except sqlalchemy.exc.IntegrityError as e:
+            except sqlalchemy.exc.IntegrityError:
                 flash('账户已使用!')
             else:
                 flash('创建成功{0}'.format(user))
         else:
             flash(userform.unsuccessed)
 
-    return dict(form=userform,action=request.url)
+    return dict(form=userform, action=request.url)
 
 
-@app.route('/login',methods=['GET','POST'])
-@templated('forms/user_login.html')
+@app.route('/login', methods=['GET', 'POST'])
+@templated('forms/user_common.html')
 def user_login():
     loginform = LoginForm()
     next_url = request.args.get('next')
-    
-    if loginform.validate_on_submit():    
+
+    if loginform.validate_on_submit():
         account = loginform.account.data
         password = loginform.password.data
         user = User.query.get(account)
-    
+
         if user and user.password == password:
-            flash('登陆成功')       
+            flash('登陆成功')
             session['username'] = user.nickname
             if next_url:
                 return redirect(next_url)
             else:
                 return redirect(url_for('index'))
-        
-    return dict(form=loginform,action=request.url)
+
+    return dict(form=loginform)
 
 
-@app.route('/logout',methods=['GET','POST'])
+@app.route('/logout', methods=['GET', 'POST'])
 def user_logout():
     session.pop('username')
     return redirect(url_for('index'))
-	
-@app.route('/markdown/<md_name>',methods=['GET','POST'])
+
+@app.route('/markdown/<md_name>', methods=['GET', 'POST'])
 @login_required
 @templated('markdown.html')
 def markdown(md_name):
-    if not md_name in app.config['MD_FILES']:
+    article = Article.query.filter(Article.title == md_name).first()
+
+    if not article:
         abort(404)
 
-    thefile = app.config['MD_FILES'][md_name]
-    md = ""
-    with open(thefile,'rb') as f:
-        md = f.read().decode('utf-8')
-    return dict(message="nihao",md=md)
+    md = article.body
+    return dict(md=md)
 
 if __name__ == '__main__':
     app.run()

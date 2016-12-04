@@ -17,19 +17,19 @@ class ModelWithWTF():
             except AttributeError as e:
                 print(e)
 
-        model.set_now()                #设置公布时间
+        model.set_now()                # 设置公布时间
         return model
 
-    def set_now(self,datetime_value=None):
+    def set_now(self, datetime_value=None):
         """将有pub_date属性的实例设置成现在."""
 
         if not hasattr(self,"pub_date"):
             return
 
-        if not datetime_value:
+        if datetime_value:
             self.pub_date = datetime_value
         else:
-            self.pub_date = datetime.utcnow()
+            self.pub_date = datetime.now()
 
 
 
@@ -56,14 +56,6 @@ class Article(db.Model, ModelWithWTF):
     category = db.relationship('Category',
         backref=db.backref('posts', lazy='dynamic'))
 
-    def __init__(self, title, body, category, pub_date=None):
-        self.title = title
-        self.body = body
-        if pub_date is None:
-            pub_date = datetime.utcnow()
-        self.pub_date = pub_date
-        self.category = category
-
     def __repr__(self):
         return '<Article %r>' % self.title
 
@@ -73,9 +65,6 @@ class Article(db.Model, ModelWithWTF):
 
 class Category(db.Model, ModelWithWTF):
     name =db.Column(db.String(40), primary_key=True)
-
-    def __init__(self,name):
-        self.name = name
 
     def __str__(self):
         return '<Category %r>' % self.name
@@ -88,9 +77,6 @@ class Tag(db.Model, ModelWithWTF):
     __tablename__ = "tag"
 
     name = db.Column(db.String(50),primary_key=True)
-
-    def __init__(self, name):
-        self.name = name
 
     def __repr__(self):
         return '<Tag %r>' % self.name
@@ -115,7 +101,7 @@ class Comment(db.Model,ModelWithWTF):
     def __repr__(self):
         return self.__str__()
 
-
+# wait to implement
 class ArticleTagRelation(db.Model):
     __tablename__ = "article_tag_relation"
     id = db.Column(db.Integer, primary_key=True)

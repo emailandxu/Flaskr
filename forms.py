@@ -24,5 +24,9 @@ class LoginForm(FlaskForm):
     account = TextField("账户", validators=[DataRequired()])
     password = PasswordField("密码", validators=[DataRequired()], filters=[passwdMd5])
     submit = SubmitField("登录")
+    
 class ArticleForm(FlaskForm):
-    pass
+    title = TextField("标题", validators=[DataRequired()])
+    name = TextField("类型", validators=[DataRequired()])
+    body = TextAreaField("正文")
+    submit = SubmitField("发布")

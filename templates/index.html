@@ -1,30 +1,17 @@
 {% extends "bootstrap/base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-		<title>{%block title%}Flaskr{%endblock%}</title>
-		{%block css%}<link rel="stylesheet" type="text/css" href="{{url_for('static',filename='css/style.css')}}">{%endblock%}
-		{%block jssrc%}<script src="{{url_for('static',filename='js/vue.js')}}"></script>{%endblock%}
-</head>
-<body>
-<div class="flash">
-	{%block flash%}
-	{% with messages = get_flashed_messages(with_categories=true) %}
-	  {% if messages %}
-	    <ul class=flashes>
-	    {% for category, message in messages %}
-	      <li class="{{ category }}">{{ message }}</li>
-	    {% endfor %}
-	    </ul>
-	  {% endif %}
-	{% endwith %}
-	{%endblock%}
-</div>
-<div id="app">
-{%block content%}
+{%block title%}Flaskr{%endblock%}
+
+{%block navbar %}
+	{{nav.mynavbar.render()}}
 {%endblock%}
-</div>
-</body>
-</html>
+
+{%block content%}
+<ol>
+	{% for article in articles%}
+	<li>
+		<a href="{{url_for('markdown',md_name=article.title)}}">{{article.title}}</a>
+	</li>
+	{%endfor%}
+</ol>
+{%endblock%}
