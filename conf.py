@@ -22,9 +22,6 @@ app.config['SECRET_KEY'] = 'hello'
 
 app.config['SERVER_NAME'] = 'localhost:8000'
 
-app.config['MD_FILES'] = {'开发日记': r"./开发日记.md"}
-
-
 # Define jinjia filters
 @app.template_filter('markdown')
 def markdown_filter(md_text):

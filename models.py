@@ -20,6 +20,23 @@ class ModelWithWTF():
         model.set_now()                # 设置公布时间
         return model
 
+    def fillIntoFormData(self,form):
+        for field in form:
+            fieldname = field.label.field_id
+            try:
+                getattr(form, fieldname).data = getattr(self, fieldname)
+            except AttributeError as e:
+                print(e)
+
+    def jsonify(self, fields):
+        jsn = dict()
+
+        for fieldname in fields:
+            jsn[fieldname] = getattr(self,fieldname)
+
+        return jsn
+
+
     def set_now(self, datetime_value=None):
         """将有pub_date属性的实例设置成现在."""
 

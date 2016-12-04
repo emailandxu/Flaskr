@@ -2,6 +2,9 @@
 {%block title%}Markdown Reader{%endblock%}
 {%block content%}
 {%import 'macros.html' as m%}
-{%call m.markdown(md)%}
+<div class="markdown-body">
+	{%call m.markdown(md)%}
 {%endcall%}
+</div>
+
 {%endblock%}
