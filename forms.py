@@ -23,7 +23,7 @@ class UserForm(FlaskForm):
 class LoginForm(FlaskForm):
     account = TextField("账户", validators=[DataRequired()])
     password = PasswordField("密码", validators=[DataRequired()], filters=[passwdMd5])
-
+    submit = SubmitField("登录")
 
 
 class ArticleForm(FlaskForm):
