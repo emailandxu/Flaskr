@@ -4,14 +4,13 @@
 
 {% block styles %}
 {{super()}}
-	<link rel="stylesheet"
-	      href="{{url_for('.static', filename='css/style.css')}}">
-	<link rel="stylesheet"
-	      href="{{url_for('.static', filename='css/github-markdown.css')}}">
+	<link rel="stylesheet" href="{{url_for('.static', filename='css/github-markdown.css')}}">
+	
+	<link rel="stylesheet" href="{{url_for('.static', filename='css/style.css')}}">
 {% endblock %}
 
 {%block navbar %}
-	{{nav.mynavbar.render()}}
+	{{nav.mynavbar.render(renderer="simple")}}
 {%endblock%}
 
 {%block content%}
