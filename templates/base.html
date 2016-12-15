@@ -6,27 +6,37 @@
 {{super()}}
 	<link rel="stylesheet" href="{{url_for('.static', filename='css/github-markdown.css')}}">
 	<link rel="stylesheet" href="{{url_for('.static', filename='css/style.css')}}">
-	<link rel="stylesheet" href="http://www.xushuli.cc/js/semantic.min.css">
+	<link rel="stylesheet" href="http://www.xushuli.cc/css/semantic.min.css">
 {% endblock %}
 
 {%block navbar %}
-	{{nav.mynavbar.render()}}
+	{{nav.mynavbar.render("my_bootstrap_render")}}
 {%endblock%}
 
 {%block content%}
+<div class="container-fluid">
+	{%block flash%}
 	{% with messages = get_flashed_messages(with_categories=true) %}
-		{% if messages %}
-		<div class="alert alert-warning">
-		<button type="button" class="close" data-dismiss="alert">&times;</button>
-		{% for category, message in messages %}
-		{{ message }}
-		{% endfor %}
+	{% if messages %}
+	<div class="row">
+		<div class="col-md-12">
+			<div class="alert alert-warning">
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+				{% for category, message in messages %}
+				{{ message }}
+				{% endfor %}
+			</div>
 		</div>
-		{% endif %}
-	{% endwith %}
+	</div>
+	{% endif %}
+	{% endwith %}	
+	{%endblock%}
+	
 	{%block page_content%}
 	{%endblock%}
+</div>
 {%endblock%}
+
 
 {%block scripts%}
 {{super()}}

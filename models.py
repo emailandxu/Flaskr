@@ -1,9 +1,9 @@
 from conf import app
 from flask.ext.sqlalchemy import SQLAlchemy
 from datetime import datetime
+from util import passwdMd5
 
 db = SQLAlchemy(app)
-
 
 class ModelWithWTF():
 
@@ -136,3 +136,16 @@ class ArticleTagRelation(db.Model):
 
 if __name__ == '__main__':
     db.create_all()
+
+    user = User()
+    user.account = "1"
+    user.email = "1"
+    user.nickname = "1"
+    user.password = passwdMd5("1")
+    user.description = "1"
+
+    db.session.add(user)
+    try:
+        db.session.commit()
+    except Exception as e:
+        print(e)

@@ -1,16 +1,16 @@
 {% extends "index.html" %}
-{%block title%}User Register{%endblock%}
-{%block content%}
-{% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    <ul class=flashes>
-    {% for category, message in messages %}
-      <li class="{{ category }}">{{ message }}</li>
-    {% endfor %}
-    </ul>
-  {% endif %}
-{% endwith %}
-	<div class="container-fluid">
-		{{wtf.quick_form(form,extra_classes='col-md-12 x-form')}}
-	</div>
+
+{%block title%}{{title}}{%endblock%}
+
+{%block page_content%}
+  <div class="row">
+    <div class="col-md-12">
+      {{wtf.quick_form(form,extra_classes="x-form")}}
+    </div>
+  </div>
+  <div class="row">
+  	<div class="col-md-12">
+  		<img src="{{url_for('authcode')}}" alt="">
+  	</div>
+  </div>
 {%endblock%}

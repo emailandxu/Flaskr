@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {%block page_content%}
+{%if articles%}
 <ol>
 	{% for article in articles%}
 	<li class="ui green label">
@@ -8,5 +9,6 @@
 	</li>
 	{%endfor%}
 </ol>
+{%endif%}
 {%endblock%}
 

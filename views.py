@@ -2,8 +2,8 @@ from conf import app
 from models import db, User, Article, Category
 from decorators import templated, login_required
 from flask import url_for, redirect, flash, abort, session, request
-from flask.ext.script import Manager
-from forms import UserForm, LoginForm, ArticleForm 
+from forms import UserForm, LoginForm, ArticleForm
+import nav
 import sqlalchemy
 
 
@@ -66,6 +66,10 @@ def user_login():
         password = loginform.password.data
         user = User.query.get(account)
 
+        if not loginform.authcode.data == session['authcode']:
+            flash('验证码错误')
+            return dict(form=loginform)
+
         if user and user.password == password:
             session['username'] = user.nickname
             flash('登陆成功')
@@ -126,5 +130,14 @@ def debug():
     flash(article.jsonify(['title','category_name','body']))
     return dict()
 
+
+@app.route('/authcode',methods=['GET'])
+def authcode():
+    from authcode import makeAuthCode
+    codePic = makeAuthCode('Fuck')
+    session['authcode'] = 'Fuck'
+    return codePic, 200, {'Content-Type': 'image/JPEG'}
+
+
 if __name__ == '__main__':
-    Manager(app).run()
+    app.run()

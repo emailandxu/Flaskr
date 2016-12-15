@@ -1,9 +1,10 @@
 from hashlib import sha1
 from dominate import tags
 from visitor import Visitor
+from conf import app
+from flask_nav import register_renderer
 
-
-class BootstrapRenderer(Visitor):
+class MyBootstrapRenderer(Visitor):
     def __init__(self, html5=True, id=None):
         self.html5 = html5
         self._in_dropdown = False
@@ -15,7 +16,7 @@ class BootstrapRenderer(Visitor):
         node_id = self.id or sha1(str(id(node)).encode()).hexdigest()
 
         root = tags.nav() if self.html5 else tags.div(role='navigation')
-        root['class'] = 'navbar navbar-default'
+        root['class'] = 'navbar navbar-inverse'
 
         cont = root.add(tags.div(_class='container-fluid'))
 
@@ -100,3 +101,6 @@ class BootstrapRenderer(Visitor):
             item['class'] = 'active'
 
         return item
+
+
+register_renderer(app,"my_bootstrap_render",MyBootstrapRenderer)
