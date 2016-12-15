@@ -1,6 +1,12 @@
 .x-form textarea{
 	height: 300px;
 }
+#csrf_token{
+	display: none;
+}
+label[for="csrf_token"]{
+	display: none;
+}
 .article{
 	margin-left: auto;
     margin-right: auto;

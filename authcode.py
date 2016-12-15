@@ -70,11 +70,11 @@ class PointIntervene(CodePicIntervene):
 
 
 def makeAuthCode(character):
-    f = BytesIO()
     cb = CodeBody(character)
     authcode = PointIntervene(cb)
     im = authcode.generate_picture()
     # im.show()
+    f = BytesIO()
     im.save(f,'JPEG')
     return f.getvalue()
 

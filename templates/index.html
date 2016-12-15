@@ -9,6 +9,75 @@
 	</li>
 	{%endfor%}
 </ol>
+<div class="ui segment">
+        <h2 class="ui dividing center aligned header">Infinite Scroll Example</h2>
+        今天我来导。。。。
+        <div class="ui divider"></div>
+        
+        <h2 class="ui dividing center aligned header">日记</h2>
+        <i class="ui red label">2013-03-03</i>
+        <i class="ui red label">日记</i>
+        <div class="ui divider"></div>
+        <div class="ui text">今天我来导。。。。</div>
+        <div class="ui divider"></div>
+</div>
 {%endif%}
+{%endblock%}
+
+{%block scripts%}
+{{super()}}
+<script>
+visiblity = {}
+
+article = {
+	makeArticle:function(title,pub_date,body){
+		return ['<h2 class="ui dividing center aligned header">'+title+'</h2>',
+        '<i class="ui red label">'+pub_date+'</i>',
+        '<div class="ui divider"></div>',
+        '<div class="ui text">'+body+'</div>',
+        '<div class="ui divider"></div>'].join('')
+	}
+}
+
+requestPatter={
+	'size':2,
+	'id':1,
+	'forward':1
+}
+
+function loadNewArticle(){
+	$.post(
+		'http://localhost:8000/api/article',
+		requestPatter,
+		function(data,status){
+			data = JSON.parse(data)
+			for(var index in data){
+				console.log(data[index])
+				h_article = article.makeArticle(data[index]['title'],data[index]['pub_date'],data[index]['body'])
+				$('.segment').append(h_article)
+			}
+		}
+	)
+	requestPatter.id+=(requestPatter.size*requestPatter.forward)
+}
+
+visiblity.ready = function(){
+	$('.segment')
+	  .visibility({
+	    once: false,
+	    // update size when new content loads
+	    observeChanges: true,
+	    // load content on bottom edge visible
+	    onBottomVisible: function() {
+	      // loads a max of 5 times
+	      console.log('bottom')
+	      window.loadNewArticle()
+	      window.loadFakeContent();
+	    }
+	  })
+	;
+}
+$(document).ready(visiblity.ready);
+</script>
 {%endblock%}
 

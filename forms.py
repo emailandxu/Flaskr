@@ -10,6 +10,7 @@ class UserForm(FlaskForm):
     nickname = TextField("昵称", validators=[DataRequired()])
     email = TextField("邮箱", validators=[DataRequired()])
     description = TextAreaField("介绍", validators=[DataRequired()])
+    authcode = TextField("验证码", validators=[DataRequired()])
     submit = SubmitField("注册")
 
 

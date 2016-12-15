@@ -28,11 +28,15 @@ class ModelWithWTF():
             except AttributeError as e:
                 print(e)
 
-    def jsonify(self, fields):
+    def dictfy(self, fields):
         jsn = dict()
 
         for fieldname in fields:
-            jsn[fieldname] = getattr(self,fieldname)
+            value = getattr(self,fieldname)
+            if type(value) == datetime:
+                jsn[fieldname] = value.strftime('%Y-%m-%d %H:%M:%S')
+            else:
+                jsn[fieldname] = value
 
         return jsn
 
@@ -74,7 +78,7 @@ class Article(db.Model, ModelWithWTF):
         backref=db.backref('posts', lazy='dynamic'))
 
     def __repr__(self):
-        return '<Article %r>' % self.title
+        return '<Article %r,%d>' % (self.title,self.id)
 
     def __str__(self):
         return self.__repr__()

@@ -1,11 +1,11 @@
-from conf import app
+from conf import app, mynavbar
 from models import db, User, Article, Category
-from decorators import templated, login_required
+from decorators import templated, login_required, admin_required
 from flask import url_for, redirect, flash, abort, session, request
 from forms import UserForm, LoginForm, ArticleForm
-import nav
+import markdown
 import sqlalchemy
-
+import nav
 
 @app.route('/')
 @login_required
@@ -16,7 +16,7 @@ def index():
 
 
 @app.route('/publish',methods=['GET','POST'])
-@login_required
+@admin_required
 @templated('forms/commonform.html')
 def publish_article():
     articleform = ArticleForm()
@@ -27,12 +27,13 @@ def publish_article():
             db.session.add(category)
             db.session.commit()
         article = Article.initWIthForm(articleform)
+        article.body = markdown.markdown(article.body)    # 将文章转换为HTML再存入数据库
         db.session.add(article)
         db.session.commit()
 
         flash('文章发表成功！')
 
-    return dict(form=articleform)
+    return dict(form=articleform,title='发布文章')
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -52,7 +53,7 @@ def user_register():
         else:
             flash(userform.unsuccessed)
 
-    return dict(form=userform, action=request.url)
+    return dict(form=userform, title="注册",security=True)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -60,7 +61,6 @@ def user_register():
 def user_login():
     loginform = LoginForm()
     next_url = request.args.get('next')
-
     if loginform.validate_on_submit():
         account = loginform.account.data
         password = loginform.password.data
@@ -68,23 +68,24 @@ def user_login():
 
         if not loginform.authcode.data == session['authcode']:
             flash('验证码错误')
-            return dict(form=loginform)
+            return dict(form=loginform,title="登录",security=True)
 
         if user and user.password == password:
             session['username'] = user.nickname
             flash('登陆成功')
-            flash("Weclome dear {0}".format(session['username']))            
+            if user.account == '1':
+                session['admin'] = True
             if next_url:
                 return redirect(next_url)
             else:
                 return redirect(url_for('index'))
 
-    return dict(form=loginform)
+    return dict(form=loginform,title="登录",security=True)
 
 
 @app.route('/logout', methods=['GET', 'POST'])
 def user_logout():
-    session.pop('username')
+    session.clear()
     return redirect(url_for('index'))
 
 
@@ -112,7 +113,7 @@ def modify_article(article_title):
 
     if articleform.validate_on_submit():
         newArticle = Article.initWIthForm(articleform)
-        update = newArticle.jsonify(['title','body','category_name'])
+        update = newArticle.dictfy(['title','body','category_name'])
         flash(update)
         article_query.update(update)
         db.session.commit()
@@ -120,7 +121,38 @@ def modify_article(article_title):
     else:
         article.fillIntoFormData(articleform)  # fill default value into form
 
-    return dict(form = articleform)
+    return dict(form=articleform)
+
+
+@app.route('/api/article', methods=['GET', 'POST'])
+@templated('base.html')
+def api_article():
+    if not all([key in request.form for key in ['size', 'id', 'forward']]):
+        flash('你误入了一个API页面哦，故意的？')
+        return dict()
+    try:
+        size = int(request.form['size'])
+        article_id = int(request.form['id'])
+        forward = int(request.form['forward'])
+    except Exception as e:
+        abort(501)
+
+    articles = None
+
+    if forward== -1:    #寻找更久远的，即id号小的
+        articles = Article.query.filter(Article.id <= article_id).order_by(Article.id.desc()).limit(size)
+    else:     #寻找更靠近现在的，即id号大的
+        articles = Article.query.filter(Article.id >= article_id).order_by(Article.id.asc()).limit(size)
+
+    import json
+    api = [article.dictfy(['title','pub_date','body']) for article in articles.all()]
+
+    return json.dumps(api)
+
+
+
+
+
 
 
 @app.route('/debug', methods=['GET', 'POST'])
@@ -134,8 +166,10 @@ def debug():
 @app.route('/authcode',methods=['GET'])
 def authcode():
     from authcode import makeAuthCode
-    codePic = makeAuthCode('Fuck')
-    session['authcode'] = 'Fuck'
+    from random import randint
+    character = str(randint(1000,9999))
+    codePic = makeAuthCode(character)
+    session['authcode'] = character
     return codePic, 200, {'Content-Type': 'image/JPEG'}
 
 
