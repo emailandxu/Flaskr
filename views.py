@@ -2,7 +2,7 @@ from conf import app
 from models import db, User, Article, Category
 from decorators import templated, login_required
 from flask import url_for, redirect, flash, abort, session, request
-
+from flask.ext.script import Manager
 from forms import UserForm, LoginForm, ArticleForm 
 import sqlalchemy
 
@@ -11,7 +11,6 @@ import sqlalchemy
 @login_required
 @templated('index.html')
 def index():
-    flash("Weclome dear {0}".format(session['username']))
     articles =Article.query.filter(1==1).all()
     return dict(articles = articles)
 
@@ -68,8 +67,9 @@ def user_login():
         user = User.query.get(account)
 
         if user and user.password == password:
-            flash('登陆成功')
             session['username'] = user.nickname
+            flash('登陆成功')
+            flash("Weclome dear {0}".format(session['username']))            
             if next_url:
                 return redirect(next_url)
             else:
@@ -120,11 +120,11 @@ def modify_article(article_title):
 
 
 @app.route('/debug', methods=['GET', 'POST'])
-@templated('flash.html')
+@templated('base.html')
 def debug():
-    article = Article.query.filter(Article.title=='开发日记').first()
+    article = Article.query.filter(1==1).first()
     flash(article.jsonify(['title','category_name','body']))
     return dict()
 
 if __name__ == '__main__':
-    app.run()
+    Manager(app).run()

@@ -21,15 +21,8 @@ app.config['SECRET_KEY'] = 'hello'
 
 app.config['SERVER_NAME'] = 'localhost:8000'
 
-# Define jinjia filters
-@app.template_filter('markdown')
-def markdown_filter(md_text):
-    return markdown.markdown(md_text)
 
-# Define navigator
-@nav.navigation()
-def mynavbar():
-    return Navbar(
+mynavbar = Navbar(
         'Flaskr',
         View('首页', 'index'),
         View('发布','publish_article'),
@@ -39,3 +32,14 @@ def mynavbar():
 	        View('Logout','user_logout')
 	    )
     )
+
+# Define jinjia filters
+@app.template_filter('markdown')
+def markdown_filter(md_text):
+    return markdown.markdown(md_text)
+
+# Define navigator
+@nav.navigation("mynavbar")
+def register_mynavbar():
+    return mynavbar
+
